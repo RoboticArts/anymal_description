@@ -4,7 +4,7 @@
   <!-- - - - - - - - - - - - - - GLOBAL ARGUMENTS - - - - - - - - - - - - - -->
 
   <xacro:arg name="use_sim" default="true" />
-  <xacro:arg name="use_virtual_stand" default="true" />
+  <xacro:arg name="use_virtual_stand" default="false" />
   <xacro:arg name="use_inspection_payload" default="true" />
 
   <!-- - - - - - - - - - - - - - XACRO INCLUDES - - - - - - - - - - - - - -->
