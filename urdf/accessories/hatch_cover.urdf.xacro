@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot name="hatch_cover" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:macro name ="hatch_cover">
+
+<!-- If no Inspection payload is mounted, this cover protects the open hatch. -->
+  <joint name="base_to_hatch" type="fixed">
+    <parent link="base"/>
+    <child link="hatch"/>
+    <origin rpy="0 0 0" xyz="0.14253 0.0 0.092"/>
+  </joint>
+  <link name="hatch">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://anymal_description/meshes/hatch.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.06631 0.00 0.01119"/>
+      <mass value="0.09653"/>
+      <inertia ixx="0.00019173168" ixy="0.00002292922" ixz="0.00000308205" iyy="0.00144879520" iyz="0.00000584565" izz="0.00162332503"/>
+    </inertial>
+  </link>
+
+</xacro:macro>
+
+</robot>

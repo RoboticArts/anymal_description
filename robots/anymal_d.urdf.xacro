@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="anymal_d" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- - - - - - - - - - - - - - GLOBAL ARGUMENTS - - - - - - - - - - - - - -->
+
+  <xacro:arg name="use_sim" default="true" />
+  <xacro:arg name="use_virtual_stand" default="true" />
+  <xacro:arg name="use_inspection_payload" default="true" />
+
+  <!-- - - - - - - - - - - - - - XACRO INCLUDES - - - - - - - - - - - - - -->
+
+  <!-- Import anymal elements -->
+  <xacro:include filename="$(find anymal_description)/urdf/bases/anymal_d_base.urdf.xacro" />
+  <xacro:include filename="$(find anymal_description)/urdf/legs/anymal_d/left_front_leg.urdf.xacro" />
+  <xacro:include filename="$(find anymal_description)/urdf/legs/anymal_d/left_hind_leg.urdf.xacro" />
+  <xacro:include filename="$(find anymal_description)/urdf/legs/anymal_d/right_front_leg.urdf.xacro" />
+  <xacro:include filename="$(find anymal_description)/urdf/legs/anymal_d/right_hind_leg.urdf.xacro" />
+
+  <!-- Import anymal complements -->
+  <xacro:include filename="$(find anymal_description)/urdf/devices/inspection_payload.urdf.xacro" />
+  <xacro:include filename="$(find anymal_description)/urdf/accessories/hatch_cover.urdf.xacro" />
+
+  <!-- Import quadruped control -->
+  <xacro:include filename="$(find anymal_description)/urdf/controllers/quadruped_control.urdf.xacro" />
+
+  <!-- - - - - - - - - - - - - -  CONTROL  - - - - - - - - - - - - - -->
+
+  <xacro:quadruped_control use_sim="$(arg use_sim)"/>
+
+  <!-- - - - - - - - - - - - - - - BASE DEFINITION  - - - - - - - - - - - - - -->
+  
+  <xacro:if value="$(arg use_virtual_stand)">
+    <link name="world"/>
+    <!-- Uses initial_pose_z because joint is fixed-->
+    <joint name="stand_fixed_joint" type="fixed">
+      <parent link="world"/>
+      <child link="base"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+  </xacro:if>
+
+  <xacro:base/>
+
+  <!-- - - - - - - - - - - - - - LEGS DEFINITION  - - - - - - - - - - - - - -->
+
+  <xacro:left_front_leg/>
+  <xacro:left_hind_leg/>
+  <xacro:right_front_leg/>
+  <xacro:right_hind_leg/>
+
+  <!-- - - - - - - - - - - - - - ACCESSORIES DEFINITION  - - - - - - - - - - - - - -->
+
+  <!-- Inspection payload -->
+  <xacro:if value="$(arg use_inspection_payload)">
+    <xacro:inspection_payload/>
+  </xacro:if>
+  <xacro:unless value="$(arg use_inspection_payload)">
+    <xacro:hatch_cover/>
+  </xacro:unless>
+
+</robot>

@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!--Plugin used to connect ROS2 with hardware or simulation -->
+  <xacro:macro name="quadruped_control" params="use_sim">
+
+    <!-- Simulation -->
+    <xacro:if value="$(arg use_sim)">
+    
+      <xacro:macro name ="gz_joint" params="joint_name id kp:=1.0 ki:=0.0 kd:=0.0 pos:=0.0">
+        <plugin
+          filename="gz-sim-joint-position-controller-system"
+          name="gz::sim::systems::JointPositionController">
+          <joint_name>${joint_name}</joint_name>
+          <use_actuator_msg>true</use_actuator_msg>
+          <actuator_number>${id}</actuator_number>
+          <!-- <use_velocity_commands>true</use_velocity_commands> -->
+          <initial_position>${pos}</initial_position>
+          <p_gain>${kp}</p_gain>
+          <i_gain>${ki}</i_gain>
+          <d_gain>${kd}</d_gain>
+        </plugin>
+        <plugin
+          filename="gz-sim-joint-state-publisher-system"
+          name="gz::sim::systems::JointStatePublisher">
+          <joint_name>${joint_name}</joint_name>
+          <publish_frequency>500</publish_frequency>
+        </plugin>
+      </xacro:macro>
+
+      <!-- Load Gazebo hardware actuators-->
+      <gazebo>
+        <xacro:gz_joint joint_name="LF_HAA" id="0" kp="150" kd="15" />
+        <xacro:gz_joint joint_name="LF_HFE" id="1" kp="250" kd="25" pos="0.82"/>
+        <xacro:gz_joint joint_name="LF_KFE" id="2" kp="350" kd="35" pos="-1.22"/>
+
+        <xacro:gz_joint joint_name="LH_HAA" id="3" kp="150" kd="15" />
+        <xacro:gz_joint joint_name="LH_HFE" id="4" kp="250" kd="25"  pos="-0.82"/>
+        <xacro:gz_joint joint_name="LH_KFE" id="5" kp="350" kd="35"  pos="1.22"/>
+
+        <xacro:gz_joint joint_name="RF_HAA" id="6" kp="150" kd="15" />
+        <xacro:gz_joint joint_name="RF_HFE" id="7" kp="250" kd="25" pos="0.82"/>
+        <xacro:gz_joint joint_name="RF_KFE" id="8" kp="350" kd="35"  pos="-1.22"/>
+
+        <xacro:gz_joint joint_name="RH_HAA" id="9" kp="150" kd="15" />
+        <xacro:gz_joint joint_name="RH_HFE" id="10" kp="250" kd="25" pos="-0.82"/>
+        <xacro:gz_joint joint_name="RH_KFE" id="11" kp="350" kd="35" pos="1.22"/>
+      </gazebo>
+
+      <!-- Load ROS2 hardware interface-->
+      <ros2_control name="QuadrupedLocomotionSystem" type="system">
+
+        <hardware>
+          <plugin>quadruped_locomotion_system/System</plugin>
+          <!-- General -->
+          <param name="port">127.0.0.0</param>
+          <!-- Left front leg -->
+          <param name="lf_haa_joint_name">LF_HAA</param>
+          <param name="lf_hfe_joint_name">LF_HFE</param>
+          <param name="lf_kfe_joint_name">LF_KFE</param>
+          <!-- Left hind leg -->
+          <param name="lh_haa_joint_name">LH_HAA</param>
+          <param name="lh_hfe_joint_name">LH_HFE</param>
+          <param name="lh_kfe_joint_name">LH_KFE</param>
+          <!-- Right front leg -->
+          <param name="rf_haa_joint_name">RF_HAA</param>
+          <param name="rf_hfe_joint_name">RF_HFE</param>
+          <param name="rf_kfe_joint_name">RF_KFE</param>
+          <!-- Right hind leg -->
+          <param name="rh_haa_joint_name">RH_HAA</param>
+          <param name="rh_hfe_joint_name">RH_HFE</param>
+          <param name="rh_kfe_joint_name">RH_KFE</param>
+        </hardware>
+
+        <!-- Joint for state -->
+        <xacro:macro name="ros2_joint" params="name">
+          <joint name="${name}">
+            <state_interface name="position"/> 
+          </joint>
+        </xacro:macro>
+
+        <gpio name="twist">
+          <command_interface name="linear_x"/>
+          <command_interface name="linear_y"/>
+          <command_interface name="linear_z"/>
+          <command_interface name="angular_x"/>
+          <command_interface name="angular_y"/>
+          <command_interface name="angular_z"/>
+        </gpio>
+
+        <!-- HW Read gets LF_HAA, LF_KFE, LF_H... values  -->
+        <xacro:ros2_joint name="LF_HAA"/>
+        <xacro:ros2_joint name="LF_HFE"/>
+        <xacro:ros2_joint name="LF_KFE"/>
+
+        <xacro:ros2_joint name="LH_HAA"/>
+        <xacro:ros2_joint name="LH_HFE"/>
+        <xacro:ros2_joint name="LH_KFE"/>
+
+        <xacro:ros2_joint name="RF_HAA"/>
+        <xacro:ros2_joint name="RF_HFE"/>
+        <xacro:ros2_joint name="RF_KFE"/>
+
+        <xacro:ros2_joint name="RH_HAA"/>
+        <xacro:ros2_joint name="RH_HFE"/>
+        <xacro:ros2_joint name="RH_KFE"/>
+
+      </ros2_control>
+
+    </xacro:if>
+
+  </xacro:macro>
+
+</robot>
